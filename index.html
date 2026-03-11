@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buzzword Bingo — 2026 Year of Context™ Edition</title>
+  <meta name="description" content="Survive the keynote. Play Buzzword Bingo with fake analyst quotes and snarky commentary." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { background: #f5f0e8; }
+    #root { min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+const { useState, useCallback, useEffect, useRef } = React;
+
+const ALL_BUZZWORDS = [
+  "Context Fabric", "Context Mesh", "Context Layer", "Context Product",
+  "Context Engineering", "Context Debt", "ContextOps", "Active Context",
+  "Context Gravity", "Context Observability", "Context Lineage",
+  "Composable Context", "Agentic Context", "Context Lake",
+  "Context Lakehouse", "Universal Context Layer",
+  "Context-Aware", "Context as a Service", "Context SLA",
+  "Context Drift Detection",
+  "Agentic AI", "Multiagent Systems", "AI Agents", "Agent Orchestration",
+  "Guardian Agents", "Autonomous Agents", "AI-Native", "AI-Ready Data",
+  "Domain-Specific LLM", "GenAI", "AI Supercomputing",
+  "Prompt Engineering", "AI Governance", "AI Trust Stack",
+  "Responsible AI", "AI Security Platform", "AI Copilot",
+  "Data Fabric", "Data Mesh", "Data Product", "Data Democratization",
+  "Composable Data", "Modern Data Stack", "Reverse ETL",
+  "Semantic Layer", "Active Metadata", "Data Catalog",
+  "Digital Twin", "Hyperautomation", "Metaverse",
+  "Web3", "Blockchain", "Low-Code / No-Code",
+  "Digital Transformation", "Paradigm Shift", "Synergy",
+  "North Star Metric", "Single Pane of Glass", "10x Engineer",
+  "Shift Left", "Cloud-Native", "Zero Trust",
+  "Composable Architecture", "Platform Engineering",
+  "Developer Experience", "Hype Cycle", "Magic Quadrant",
+  "Critical Infrastructure", "Thought Leader",
+  "Disruption", "Innovation at Scale", "Operationalize",
+  "Democratize", "Net New", "Move the Needle",
+  "Boil the Ocean", "Best of Breed", "Swim Lane",
+  "Data-Driven", "Geopatriation", "Confidential Computing",
+  "Preemptive Cybersecurity", "Digital Provenance",
+  "Technical Debt", "Maturity Model",
+];
+
+const QUOTE_TEMPLATES = [
+  `"By 2029, organizations that fail to invest in {BW} will see a 40% decline in competitive positioning." — VP Analyst, Gartner`,
+  `"We're seeing {BW} move rapidly from Innovation Trigger to Peak of Inflated Expectations." — Distinguished Analyst, Gartner`,
+  `"{BW} is no longer optional. It is a strategic imperative for every CIO." — Gartner IT Symposium Keynote`,
+  `"Leaders who embrace {BW} today will define their industries for decades." — Gartner Research Note`,
+  `"Our clients are asking about {BW} more than any other topic this quarter." — Managing VP, Gartner`,
+  `"Gartner predicts that by 2030, 75% of enterprises will have adopted {BW} in mission-critical workflows."`,
+  `"The convergence of AI and {BW} represents a once-in-a-generation transformation opportunity." — Gartner Symposium`,
+  `"{BW} isn't just a technology shift — it's a catalyst for business transformation." — VP Analyst, Gartner`,
+  `"Organizations without a {BW} strategy are building on sand." — Gartner D&A Summit 2026`,
+  `"We've placed {BW} in the top right quadrant for the third consecutive year." — Gartner Magic Quadrant™`,
+  `"The ROI on {BW} is no longer theoretical. Early adopters report 3x efficiency gains." — Gartner Research`,
+  `"If you're not talking to your board about {BW}, you're already behind." — Gartner CIO Survey`,
+  `"Gartner estimates the {BW} market will reach $47 billion by 2028, up from $2.3 billion in 2025."`,
+  `"This is the year {BW} moves from proof-of-concept to production at scale." — Gartner Hype Cycle™`,
+  `"{BW} is emerging as one of the most critical differentiators for successful enterprise deployments." — VP Analyst`,
+  `"We cannot overstate the urgency: {BW} readiness must be on every CIO's 90-day plan." — Gartner`,
+  `"In our latest survey, 82% of technology leaders cited {BW} as a top-three priority for 2026." — Gartner`,
+  `"The window to establish {BW} leadership is 18 months. After that, fast followers will close the gap." — Gartner`,
+  `"Think of {BW} not as a cost center, but as the connective tissue of your entire digital strategy." — Gartner`,
+  `"{BW} maturity correlates directly with AI deployment success rates, according to our latest benchmark." — Gartner`,
+  `"Every dollar not spent on {BW} today becomes three dollars of technical debt tomorrow." — Gartner D&A Summit`,
+  `"Our recommendation: appoint a dedicated {BW} owner at the VP level or above by Q3." — Gartner Advisory`,
+  `"The vendors who embed {BW} natively will dominate the next Gartner Magic Quadrant cycle."`,
+  `"{BW} is this decade's cloud migration moment. Miss it and you'll spend the next five years catching up." — Gartner`,
+];
+
+const SNARKY_COMMENTS = [
+  "BINGO! You survived a Gartner keynote!",
+  "BINGO! That's a $50,000 analyst subscription well spent!",
+  "BINGO! You may now call yourself a Context Engineer.",
+  "BINGO! Please collect your complimentary Hype Cycle poster.",
+  "BINGO! Your enterprise is now officially Transformed\u2122.",
+  "BINGO! You've been promoted to Chief Context Officer.",
+];
+
+const HIT_QUIPS = [
+  "Nailed it!", "Got 'em!", "Sharp ears!", "Bingo reflexes!",
+  "Analyst-grade hearing!", "You've done this before.",
+  "Eagle eye!", "That's the one!", "Spotted!",
+];
+
+const MISS_QUIPS = [
+  "It slipped past you\u2026", "The keynote claims another victim.",
+  "Too much synergy, not enough focus.", "Buzzword overload!",
+  "Lost in the hype cycle.", "The analyst wins this round.",
+  "Context was insufficient.", "Governance failure detected.",
+];
+
+function shuffleArray(arr) {
+  const shuffled = [...arr];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+function generateBoard() {
+  const shuffled = shuffleArray(ALL_BUZZWORDS);
+  const board = shuffled.slice(0, 25);
+  board[12] = "FREE\nSPACE";
+  return board;
+}
+
+function checkBingo(selected) {
+  const lines = [];
+  for (let i = 0; i < 5; i++) {
+    lines.push([i*5, i*5+1, i*5+2, i*5+3, i*5+4]);
+    lines.push([i, i+5, i+10, i+15, i+20]);
+  }
+  lines.push([0, 6, 12, 18, 24]);
+  lines.push([4, 8, 12, 16, 20]);
+  for (const line of lines) {
+    if (line.every(idx => selected.has(idx))) return line;
+  }
+  return null;
+}
+
+function DaubMark({ isWin }) {
+  const id = isWin ? "W" : "N";
+  return (
+    <svg viewBox="0 0 100 100" style={{
+      position: "absolute", top: "50%", left: "50%",
+      width: "75%", height: "75%",
+      transform: "translate(-50%, -50%)",
+      pointerEvents: "none", zIndex: 3,
+    }}>
+      <defs>
+        <filter id={`dab${id}`}><feGaussianBlur stdDeviation="4" /></filter>
+        <radialGradient id={`grad${id}`} cx="40%" cy="40%">
+          <stop offset="0%" stopColor={isWin ? "#2ecc71" : "#e74c3c"} stopOpacity="0.7" />
+          <stop offset="100%" stopColor={isWin ? "#1a8f4e" : "#c0392b"} stopOpacity="0.5" />
+        </radialGradient>
+      </defs>
+      <circle cx="50" cy="50" r="42" fill={`url(#grad${id})`} filter={`url(#dab${id})`} />
+    </svg>
+  );
+}
+
+function BuzzwordBingo() {
+  const [board, setBoard] = useState(() => generateBoard());
+  const [selected, setSelected] = useState(new Set([12]));
+  const [winLine, setWinLine] = useState(null);
+  const [bingoMsg, setBingoMsg] = useState("");
+  const [cardNum] = useState(() => Math.floor(Math.random() * 9000 + 1000));
+
+  const [playing, setPlaying] = useState(false);
+  const [currentCall, setCurrentCall] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [feedback, setFeedback] = useState(null);
+  const [callQueue, setCallQueue] = useState([]);
+  const [calledCount, setCalledCount] = useState(0);
+  const [hits, setHits] = useState(0);
+  const [misses, setMisses] = useState(0);
+  const [speed, setSpeed] = useState("normal");
+  const [paused, setPaused] = useState(false);
+  const [highlight, setHighlight] = useState(null);
+
+  const timerRef = useRef(null);
+  const nextCallRef = useRef(null);
+  const answered = useRef(false);
+
+  const CALL_TIME = speed === "slow" ? 10 : speed === "normal" ? 7 : 4;
+
+  const startKeynote = () => {
+    const boardWords = board.filter((_, i) => i !== 12);
+    const nonBoardWords = ALL_BUZZWORDS.filter(w => !board.includes(w));
+    const shuffledBoard = shuffleArray(boardWords);
+    const shuffledNon = shuffleArray(nonBoardWords).slice(0, 12);
+    const queue = [];
+    let bi = 0, ni = 0;
+    while (bi < shuffledBoard.length || ni < shuffledNon.length) {
+      if (bi < shuffledBoard.length) queue.push(shuffledBoard[bi++]);
+      if (bi < shuffledBoard.length) queue.push(shuffledBoard[bi++]);
+      if (ni < shuffledNon.length) queue.push(shuffledNon[ni++]);
+    }
+    setCallQueue(queue);
+    setCalledCount(0);
+    setHits(0);
+    setMisses(0);
+    setPlaying(true);
+    setPaused(false);
+    setCurrentCall(null);
+    setFeedback(null);
+    setBingoMsg("");
+    setWinLine(null);
+    setSelected(new Set([12]));
+    setHighlight(null);
+  };
+
+  const callNext = useCallback(() => {
+    if (callQueue.length === 0 || winLine) {
+      setPlaying(false);
+      if (!winLine) setFeedback({ text: "The keynote mercifully ends. No bingo today.", type: "info" });
+      return;
+    }
+    const word = callQueue[0];
+    const remaining = callQueue.slice(1);
+    setCallQueue(remaining);
+    const boardIdx = board.indexOf(word);
+    const template = QUOTE_TEMPLATES[Math.floor(Math.random() * QUOTE_TEMPLATES.length)];
+    const quote = template.replace("{BW}", word);
+    setCurrentCall({ buzzword: word, quote, boardIdx });
+    setTimeLeft(CALL_TIME);
+    setCalledCount(c => c + 1);
+    setFeedback(null);
+    setHighlight(null);
+    answered.current = false;
+  }, [callQueue, board, winLine, CALL_TIME]);
+
+  useEffect(() => {
+    if (playing && !currentCall && callQueue.length > 0 && !paused) {
+      const t = setTimeout(callNext, 600);
+      return () => clearTimeout(t);
+    }
+  }, [playing, currentCall, callQueue, paused, callNext]);
+
+  useEffect(() => {
+    if (!currentCall || paused || winLine) return;
+    if (timeLeft <= 0) {
+      if (!answered.current) {
+        answered.current = true;
+        if (currentCall.boardIdx !== -1) {
+          setMisses(m => m + 1);
+          setHighlight(currentCall.boardIdx);
+          setFeedback({
+            text: MISS_QUIPS[Math.floor(Math.random() * MISS_QUIPS.length)],
+            type: "miss"
+          });
+        } else {
+          setFeedback({ text: `"${currentCall.buzzword}" \u2014 not on your card. Lucky break.`, type: "info" });
+        }
+      }
+      nextCallRef.current = setTimeout(() => {
+        setCurrentCall(null);
+        setHighlight(null);
+      }, 1800);
+      return () => clearTimeout(nextCallRef.current);
+    }
+    timerRef.current = setTimeout(() => setTimeLeft(t => t - 1), 1000);
+    return () => clearTimeout(timerRef.current);
+  }, [timeLeft, currentCall, paused, winLine]);
+
+  const handleClick = useCallback((idx) => {
+    if (idx === 12) return;
+
+    if (!playing) {
+      const next = new Set(selected);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
+      setSelected(next);
+      const result = checkBingo(next);
+      if (result) {
+        setWinLine(result);
+        setBingoMsg(SNARKY_COMMENTS[Math.floor(Math.random() * SNARKY_COMMENTS.length)]);
+      }
+      return;
+    }
+
+    if (!currentCall || answered.current || winLine) return;
+
+    if (idx === currentCall.boardIdx) {
+      answered.current = true;
+      clearTimeout(timerRef.current);
+      const next = new Set(selected);
+      next.add(idx);
+      setSelected(next);
+      setHits(h => h + 1);
+      setFeedback({
+        text: HIT_QUIPS[Math.floor(Math.random() * HIT_QUIPS.length)],
+        type: "hit"
+      });
+      const result = checkBingo(next);
+      if (result) {
+        setWinLine(result);
+        setBingoMsg(SNARKY_COMMENTS[Math.floor(Math.random() * SNARKY_COMMENTS.length)]);
+        setPlaying(false);
+        return;
+      }
+      nextCallRef.current = setTimeout(() => {
+        setCurrentCall(null);
+        setHighlight(null);
+      }, 1200);
+    } else if (currentCall.boardIdx === -1) {
+      setFeedback({ text: "That one's not being called! Stay sharp.", type: "miss" });
+    } else {
+      setFeedback({ text: "Wrong square! Keep looking\u2026", type: "miss" });
+    }
+  }, [playing, currentCall, selected, winLine]);
+
+  const reset = () => {
+    clearTimeout(timerRef.current);
+    clearTimeout(nextCallRef.current);
+    setBoard(generateBoard());
+    setSelected(new Set([12]));
+    setWinLine(null);
+    setBingoMsg("");
+    setPlaying(false);
+    setPaused(false);
+    setCurrentCall(null);
+    setCallQueue([]);
+    setFeedback(null);
+    setCalledCount(0);
+    setHits(0);
+    setMisses(0);
+    setHighlight(null);
+  };
+
+  const togglePause = () => setPaused(p => !p);
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: "#f5f0e8",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: "16px 12px",
+      fontFamily: "Georgia, 'Times New Roman', serif",
+    }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Special+Elite&display=swap');
+        @keyframes slideDown {
+          0% { transform: translateY(-10px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes winStamp {
+          0% { transform: translate(-50%,-50%) rotate(-12deg) scale(3); opacity: 0; }
+          50% { transform: translate(-50%,-50%) rotate(-12deg) scale(0.95); opacity: 1; }
+          100% { transform: translate(-50%,-50%) rotate(-12deg) scale(1); opacity: 1; }
+        }
+        @keyframes pulseGlow {
+          0%, 100% { box-shadow: 0 0 0px transparent; }
+          50% { box-shadow: 0 0 12px rgba(192,57,43,0.4); }
+        }
+        @keyframes tickFlash {
+          0%, 100% { color: #c0392b; }
+          50% { color: #e74c3c; transform: scale(1.15); }
+        }
+      `}</style>
+
+      {playing && (
+        <div style={{
+          maxWidth: 520, width: "100%",
+          background: "#fffef9",
+          border: "3px solid #1a1a1a",
+          borderRadius: "2px",
+          padding: "14px 16px",
+          marginBottom: 10,
+          boxShadow: "4px 4px 0px rgba(0,0,0,0.1)",
+          position: "relative",
+        }}>
+          <div style={{
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+            marginBottom: 8,
+          }}>
+            <span style={{
+              fontFamily: "'Special Elite', monospace",
+              fontSize: 10, color: "#999", letterSpacing: 2, textTransform: "uppercase",
+            }}>
+              LIVE FROM THE KEYNOTE &mdash; CALL #{calledCount}
+            </span>
+            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              {currentCall && !answered.current && (
+                <span style={{
+                  fontFamily: "'Alfa Slab One', serif",
+                  fontSize: 22,
+                  color: timeLeft <= 3 ? "#c0392b" : "#333",
+                  animation: timeLeft <= 3 ? "tickFlash 0.5s ease infinite" : "none",
+                  minWidth: 28,
+                  textAlign: "center",
+                  display: "inline-block",
+                }}>
+                  {timeLeft}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {currentCall ? (
+            <div>
+              <div style={{
+                fontFamily: "'Special Elite', monospace",
+                fontSize: "clamp(12px, 2vw, 15px)",
+                color: "#444",
+                lineHeight: 1.5,
+                fontStyle: "italic",
+                minHeight: 60,
+              }}>
+                {currentCall.quote}
+              </div>
+              {currentCall.boardIdx === -1 && !answered.current && (
+                <div style={{
+                  fontFamily: "'Special Elite', monospace",
+                  fontSize: 10, color: "#bbb", marginTop: 6,
+                }}>
+                  (This one may not be on your card&hellip;)
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{
+              fontFamily: "'Special Elite', monospace",
+              fontSize: 13, color: "#bbb", textAlign: "center", padding: "10px 0",
+            }}>
+              {paused ? "Keynote paused. The analyst is hydrating." : "The analyst approaches the podium\u2026"}
+            </div>
+          )}
+
+          {currentCall && !answered.current && (
+            <div style={{
+              marginTop: 10, height: 4, background: "#eee", borderRadius: 2, overflow: "hidden",
+            }}>
+              <div style={{
+                height: "100%",
+                width: `${(timeLeft / CALL_TIME) * 100}%`,
+                background: timeLeft <= 2 ? "#c0392b" : timeLeft <= 4 ? "#e67e22" : "#2ecc71",
+                transition: "width 1s linear, background 0.3s",
+                borderRadius: 2,
+              }} />
+            </div>
+          )}
+
+          {feedback && (
+            <div style={{
+              marginTop: 8,
+              fontFamily: "'Special Elite', monospace",
+              fontSize: 12,
+              color: feedback.type === "hit" ? "#1a8f4e" : feedback.type === "miss" ? "#c0392b" : "#888",
+              fontWeight: "bold",
+              animation: "slideDown 0.2s ease-out",
+            }}>
+              {feedback.text}
+            </div>
+          )}
+
+          <div style={{
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+            marginTop: 10, borderTop: "1px solid #eee", paddingTop: 8,
+          }}>
+            <span style={{
+              fontFamily: "'Special Elite', monospace",
+              fontSize: 11, color: "#999",
+            }}>
+              <span style={{ color: "#1a8f4e" }}>{"\u2713"} {hits}</span>
+              {" / "}
+              <span style={{ color: "#c0392b" }}>{"\u2717"} {misses}</span>
+            </span>
+            <button onClick={togglePause} style={{
+              background: "none", border: "1px solid #ccc", borderRadius: 2,
+              fontFamily: "'Special Elite', monospace", fontSize: 10, color: "#999",
+              padding: "3px 10px", cursor: "pointer", letterSpacing: 1,
+            }}>
+              {paused ? "\u25B6 RESUME" : "\u275A\u275A PAUSE"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div style={{
+        background: "#fffef9",
+        border: "4px solid #1a1a1a",
+        borderRadius: "2px",
+        padding: "16px 14px 14px",
+        maxWidth: 520,
+        width: "100%",
+        boxShadow: "6px 6px 0px rgba(0,0,0,0.1)",
+        position: "relative",
+      }}>
+        <div style={{
+          position: "absolute", top: 6, right: 12,
+          fontFamily: "'Special Elite', monospace",
+          fontSize: 9, color: "#ccc",
+        }}>
+          CARD #{cardNum}
+        </div>
+
+        <div style={{ textAlign: "center", marginBottom: 8 }}>
+          <div style={{
+            fontFamily: "'Alfa Slab One', Impact, serif",
+            fontSize: "clamp(22px, 5vw, 36px)",
+            color: "#c0392b",
+            lineHeight: 1, letterSpacing: 3,
+          }}>
+            BUZZWORD BINGO
+          </div>
+          <div style={{
+            fontFamily: "'Special Elite', monospace",
+            fontSize: "clamp(8px, 1.4vw, 10px)",
+            color: "#999", marginTop: 4, letterSpacing: 3,
+          }}>
+            {"\u2605"} 2026 &mdash; THE YEAR OF CONTEXT{"\u2122"} EDITION {"\u2605"}
+          </div>
+          <div style={{ borderTop: "3px double #1a1a1a", width: "75%", margin: "8px auto 0" }} />
+        </div>
+
+        <div style={{
+          display: "grid", gridTemplateColumns: "repeat(5, 1fr)",
+          border: "3px solid #1a1a1a", background: "#c0392b",
+        }}>
+          {["B","I","N","G","O"].map((letter, i) => (
+            <div key={letter} style={{
+              textAlign: "center",
+              fontFamily: "'Alfa Slab One', Impact, serif",
+              fontSize: "clamp(20px, 4vw, 32px)",
+              color: "#fff", padding: "5px 0 3px",
+              borderRight: i < 4 ? "2px solid rgba(255,255,255,0.25)" : "none",
+              userSelect: "none",
+            }}>
+              {letter}
+            </div>
+          ))}
+        </div>
+
+        <div style={{
+          display: "grid", gridTemplateColumns: "repeat(5, 1fr)",
+          border: "3px solid #1a1a1a", borderTop: "none",
+        }}>
+          {board.map((word, idx) => {
+            const isSelected = selected.has(idx);
+            const isFree = idx === 12;
+            const isWinCell = winLine && winLine.includes(idx);
+            const isHighlighted = highlight === idx;
+            const col = idx % 5;
+            const row = Math.floor(idx / 5);
+
+            return (
+              <button
+                key={idx}
+                onClick={() => handleClick(idx)}
+                style={{
+                  aspectRatio: "1",
+                  border: "none",
+                  borderRight: col < 4 ? "1px solid #d0c9b8" : "none",
+                  borderBottom: row < 4 ? "1px solid #d0c9b8" : "none",
+                  background: isHighlighted ? "#fff3f3"
+                    : isFree ? "#f9f3e3" : "#fffef9",
+                  color: "#2c2c2c",
+                  fontSize: "clamp(7px, 1.3vw, 10px)",
+                  fontFamily: "'Special Elite', monospace",
+                  cursor: (isFree || (winLine && playing)) ? "default" : "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  textAlign: "center", padding: "2px", lineHeight: 1.2,
+                  position: "relative", whiteSpace: "pre-line",
+                  outline: "none", userSelect: "none",
+                  animation: isHighlighted ? "pulseGlow 1s ease 2" : "none",
+                  transition: "background 0.15s",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isFree && !winLine && !isSelected)
+                    e.currentTarget.style.background = "#f7f4ed";
+                }}
+                onMouseLeave={(e) => {
+                  if (!isFree && !isSelected && !isHighlighted)
+                    e.currentTarget.style.background = "#fffef9";
+                }}
+              >
+                <span style={{
+                  position: "relative", zIndex: 4,
+                  opacity: isSelected && !isFree ? 0.35 : 1,
+                  fontWeight: isFree ? "bold" : "normal",
+                }}>
+                  {word}
+                </span>
+                {isSelected && <DaubMark isWin={isWinCell} />}
+              </button>
+            );
+          })}
+        </div>
+
+        {bingoMsg && (
+          <div style={{
+            position: "absolute", top: "55%", left: "50%",
+            transform: "translate(-50%,-50%) rotate(-12deg)",
+            animation: "winStamp 0.4s ease-out forwards",
+            zIndex: 10, pointerEvents: "none",
+          }}>
+            <div style={{
+              border: "5px double #c0392b", borderRadius: "8px",
+              padding: "10px 32px",
+              background: "rgba(255,255,252,0.93)",
+            }}>
+              <div style={{
+                fontFamily: "'Alfa Slab One', Impact, serif",
+                fontSize: "clamp(32px, 7vw, 52px)",
+                color: "#c0392b", letterSpacing: 6,
+                textAlign: "center", lineHeight: 1,
+              }}>
+                BINGO!
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div style={{
+        marginTop: 12, display: "flex", gap: 10,
+        alignItems: "center", flexWrap: "wrap", justifyContent: "center",
+      }}>
+        {!playing ? (
+          <>
+            <button onClick={startKeynote} style={{
+              background: "#c0392b", border: "3px solid #1a1a1a", color: "#fff",
+              padding: "8px 22px", borderRadius: "2px", fontSize: 13,
+              fontFamily: "'Alfa Slab One', Impact, serif",
+              cursor: "pointer", letterSpacing: 2, textTransform: "uppercase",
+              boxShadow: "3px 3px 0px rgba(0,0,0,0.15)", transition: "all 0.1s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translate(1px,1px)";
+              e.currentTarget.style.boxShadow = "2px 2px 0px rgba(0,0,0,0.15)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translate(0,0)";
+              e.currentTarget.style.boxShadow = "3px 3px 0px rgba(0,0,0,0.15)";
+            }}>
+              {bingoMsg ? "Play Again" : "\u25B6 Start Keynote"}
+            </button>
+            <button onClick={reset} style={{
+              background: "none", border: "2px solid #999", color: "#999",
+              padding: "7px 18px", borderRadius: "2px", fontSize: 12,
+              fontFamily: "'Alfa Slab One', Impact, serif",
+              cursor: "pointer", letterSpacing: 2, textTransform: "uppercase",
+            }}>
+              New Card
+            </button>
+          </>
+        ) : (
+          <button onClick={reset} style={{
+            background: "none", border: "2px solid #999", color: "#999",
+            padding: "7px 18px", borderRadius: "2px", fontSize: 12,
+            fontFamily: "'Alfa Slab One', Impact, serif",
+            cursor: "pointer", letterSpacing: 2,
+          }}>
+            QUIT KEYNOTE
+          </button>
+        )}
+      </div>
+
+      {!playing && (
+        <div style={{
+          marginTop: 10, display: "flex", gap: 8, alignItems: "center",
+        }}>
+          <span style={{
+            fontFamily: "'Special Elite', monospace",
+            fontSize: 10, color: "#bbb", letterSpacing: 1,
+          }}>
+            SPEED:
+          </span>
+          {["slow", "normal", "fast"].map(s => (
+            <button key={s} onClick={() => setSpeed(s)} style={{
+              background: speed === s ? "#c0392b" : "none",
+              border: speed === s ? "1px solid #1a1a1a" : "1px solid #ccc",
+              color: speed === s ? "#fff" : "#999",
+              padding: "2px 10px", borderRadius: 2, fontSize: 10,
+              fontFamily: "'Special Elite', monospace",
+              cursor: "pointer", letterSpacing: 1, textTransform: "uppercase",
+            }}>
+              {s === "slow" ? "INTERN" : s === "normal" ? "ANALYST" : "VP"}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div style={{
+        marginTop: 20, fontSize: 9, color: "#ccc", textAlign: "center",
+        fontFamily: "'Special Elite', monospace",
+        letterSpacing: 1, lineHeight: 1.8, maxWidth: 460,
+      }}>
+        FOR USE DURING ANALYST BRIEFINGS, VENDOR KEYNOTES &amp; ALL-HANDS MEETINGS
+        <br />
+        NOT AFFILIATED WITH GARTNER, INC. {"\u2022"} "CONTEXT" IS A TRADEMARK OF NOBODY YET
+        <br />
+        <span style={{ color: "#c0392b", opacity: 0.4 }}>joereis.com</span>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<BuzzwordBingo />);
+  </script>
+</body>
+</html>
