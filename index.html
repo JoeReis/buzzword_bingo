@@ -24,35 +24,39 @@
 const { useState, useCallback, useEffect, useRef } = React;
 
 const ALL_BUZZWORDS = [
+  // Context
   "Context Fabric", "Context Mesh", "Context Layer", "Context Product",
   "Context Engineering", "Context Debt", "ContextOps", "Active Context",
   "Context Gravity", "Context Observability", "Context Lineage",
   "Composable Context", "Agentic Context", "Context Lake",
   "Context Lakehouse", "Universal Context Layer",
   "Context-Aware", "Context as a Service", "Context SLA",
-  "Context Drift Detection",
-  "Agentic AI", "Multiagent Systems", "AI Agents", "Agent Orchestration",
-  "Guardian Agents", "Autonomous Agents", "AI-Native", "AI-Ready Data",
-  "Domain-Specific LLM", "GenAI", "AI Supercomputing",
-  "Prompt Engineering", "AI Governance", "AI Trust Stack",
-  "Responsible AI", "AI Security Platform", "AI Copilot",
-  "Data Fabric", "Data Mesh", "Data Product", "Data Democratization",
-  "Composable Data", "Modern Data Stack", "Reverse ETL",
-  "Semantic Layer", "Active Metadata", "Data Catalog",
-  "Digital Twin", "Hyperautomation", "Metaverse",
-  "Web3", "Blockchain", "Low-Code / No-Code",
-  "Digital Transformation", "Paradigm Shift", "Synergy",
-  "North Star Metric", "Single Pane of Glass", "10x Engineer",
-  "Shift Left", "Cloud-Native", "Zero Trust",
-  "Composable Architecture", "Platform Engineering",
-  "Developer Experience", "Inflection Index", "Leadership Lattice",
-  "Critical Infrastructure", "Thought Leader",
-  "Disruption", "Innovation at Scale", "Operationalize",
-  "Democratize", "Net New", "Move the Needle",
-  "Boil the Ocean", "Best of Breed", "Swim Lane",
-  "Data-Driven", "Geopatriation", "Confidential Computing",
-  "Preemptive Cybersecurity", "Digital Provenance",
-  "Technical Debt", "Maturity Model",
+  "Context Drift Detection", "Context Window", "Context Budget",
+  "Context Collapse", "Context Injection", "Context Caching",
+  // AI
+  "Agentic AI", "GenAI", "AI-Native", "AI-Ready Data",
+  "Domain-Specific LLM", "AI Supercomputing", "Prompt Engineering",
+  "AI Governance", "AI Trust Stack", "Responsible AI",
+  "AI Security Platform", "AI Copilot", "AI Factory",
+  "Inference at Scale", "Model Ops", "Foundation Model",
+  "AI-Native Infrastructure", "Retrieval-Augmented Generation",
+  "Multimodal AI", "AI Observability", "Model Drift",
+  // Agent
+  "Multiagent Systems", "AI Agents", "Agent Orchestration",
+  "Guardian Agents", "Autonomous Agents", "Agent Mesh",
+  "Agent Handoff", "Agent Swarm", "Agentic Workflow",
+  "Agent-to-Agent", "Agent Framework", "Orchestration Layer",
+  "Human-in-the-Loop Agent", "Agent Memory", "Agent Tool Use",
+  // Data center
+  "Data Center as Code", "Edge Data Center", "Liquid Cooling",
+  "Sustainable Data Center", "DCIM", "Hyperscale DC",
+  "Modular Data Center", "Colo Strategy", "AI Data Center",
+  "GPU Cluster", "Compute Density", "Power Usage Effectiveness",
+  "Smart Facility", "Data Center Resilience", "Tier IV DC",
+  // Data (context-adjacent)
+  "Data Fabric", "Data Mesh", "Data Product", "Semantic Layer",
+  "Active Metadata", "Data Catalog", "Modern Data Stack",
+  "Reverse ETL", "Data Democratization", "Composable Data",
 ];
 
 const QUOTE_TEMPLATES = [
@@ -76,10 +80,12 @@ const QUOTE_TEMPLATES = [
   `"The window to establish {BW} leadership is 18 months. After that, fast followers will close the gap." — Pinnacle Advisory`,
   `"Think of {BW} not as a cost center, but as the connective tissue of your entire digital strategy." — Meridian Insights`,
   `"{BW} maturity correlates directly with AI deployment success rates, according to our latest benchmark." — Stratovant`,
-  `"Every dollar not spent on {BW} today becomes three dollars of technical debt tomorrow." — Synergex Global D&A Summit`,
+  `"Every dollar not spent on {BW} today becomes three dollars of strategic deficit tomorrow." — Synergex Global D&A Summit`,
   `"Our recommendation: appoint a dedicated {BW} owner at the VP level or above by Q3." — Pinnacle Advisory Group`,
   `"The vendors who embed {BW} natively will dominate the next Stratovant Leadership Lattice cycle."`,
   `"{BW} is this decade's cloud migration moment. Miss it and you'll spend the next five years catching up." — Meridian Insights`,
+  `"We've coined the term {BW} to describe what we're seeing in the market. Expect broad adoption of the taxonomy by Q4." — Major Analyst Firm`,
+  `"Our new framework positions {BW} at the intersection of capability acceleration and intent-driven transformation." — Research Note`,
 ];
 
 const SNARKY_COMMENTS = [
@@ -88,6 +94,7 @@ const SNARKY_COMMENTS = [
   "BINGO! You may now call yourself a Context Engineer.",
   "BINGO! Please collect your complimentary Inflection Index poster.",
   "BINGO! Your enterprise is now officially Transformed\u2122.",
+  "BINGO! You just heard a term that was invented last quarter.",
   "BINGO! You've been promoted to Chief Context Officer.",
 ];
 
