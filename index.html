@@ -185,7 +185,7 @@ function BuzzwordBingo() {
   const nextCallRef = useRef(null);
   const answered = useRef(false);
 
-  const CALL_TIME = speed === "slow" ? 10 : speed === "normal" ? 7 : 4;
+  const CALL_TIME = speed === "slow" ? 13 : speed === "normal" ? 9 : 5;
 
   const startKeynote = () => {
     const boardWords = board.filter((_, i) => i !== 12);
